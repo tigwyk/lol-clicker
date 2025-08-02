@@ -1,186 +1,85 @@
-# Cop-Clicker
-## An incremental game about cop life
+# LoL Clicker
+## An incremental game about League of Legends progression
 
-A browser-based clicker game where players progress through a police officer's career, earning respect points and climbing the ranks from Beat Cop to Chief.
+A browser-based clicker game where players progress through the ranks of League of Legends, earning gold and experience while climbing from Iron to Challenger.
 
 ## 🎮 Current Features
 
 ### Core Gameplay
-- **Click Mechanics**: Click the police car to earn Respect Points (RP)
+- **Last-Hit Mechanics**: Click to last-hit minions and earn gold and experience
 - **Big Number Support**: Handle ridiculously large numbers using break_eternity.js
 - **Smart Formatting**: K, M, B, T, Qa, Qi, Sx, Sp, Oc, No, and scientific notation
-- **Visual Feedback**: Floating "+X" animations on clicks
+- **Visual Feedback**: Floating "+X gold" animations on successful last-hits
 - **Auto-Save**: Progress automatically saved every 5 seconds to localStorage
 
-### Progression System
-- **6 Police Ranks**: Beat Cop → Detective → Sergeant → Lieutenant → Captain → Chief
-- **Rank Requirements**: 0, 100, 500, 2K, 10K, 50K Respect Points
-- **Rank Bonuses**: +25% multiplier to all values per rank
-- **Progress Tracking**: Visual progress bar showing promotion status
+### Ranking System
+- **9 LoL Ranks**: Iron → Bronze → Silver → Gold → Platinum → Diamond → Master → Grandmaster → Challenger
+- **Division System**: 4 divisions per rank (except Master+ tiers)
+- **League Points (LP)**: 100 LP required per division advancement
+- **Rank Bonuses**: Progressive multipliers from Iron (1.0x) to Challenger (4.0x)
+- **Visual Progress**: LP progress bars showing next division/rank promotion
+- **Detailed Stats**: Shows LP needed for next promotion with color-coded indicators
 
-### Upgrade System
-**👤 Click Upgrades:**
-- **🔧 Equipment**: +1 click value (starts at 10 RP, 1.4x scaling)
-- **📚 Training**: +2 click value (starts at 25 RP, 1.6x scaling)
+### Item System
+**⚔️ Starting Items:**
+- **Doran's Blade**: +1.5x click damage (starts at 15g, 1.15x scaling)
+- **Doran's Ring**: +1 gold/sec passive income (starts at 25g, 1.15x scaling)
 
-**💰 Passive Income Generators:**
-- **👮 Partner**: +1 RP/sec (starts at 15 RP, 1.3x scaling)
-- **🚗 Patrol Unit**: +3 RP/sec (starts at 50 RP, 1.5x scaling)
-- **🔍 Investigation**: +12 RP/sec (starts at 200 RP, 1.7x scaling)
-- **🏢 Precinct**: +50 RP/sec (starts at 1K RP, 2.0x scaling)
+**🗡️ Basic Items:**
+- **Long Sword**: +2x click damage (starts at 100g, 1.15x scaling)
+- **Amplifying Tome**: +2x experience gain (starts at 150g, 1.15x scaling)
+- **Rejuvenation Bead**: +5 gold/sec passive income (starts at 200g, 1.15x scaling)
 
-**⚡ Automation:**
-- **🤖 AI System**: +50% passive income multiplier (starts at 5K RP, 2.5x scaling)
+**⚡ Epic Items:**
+- **B.F. Sword**: +3x click damage (starts at 500g, 1.15x scaling)
+- **Pickaxe**: +15 gold/sec passive income (starts at 750g, 1.15x scaling)
 
-### Prestige System
-**🏆 Retirement Mechanic:**
-- **Unlock Requirement**: Reach Chief rank (50K RP)
-- **Legacy Points**: Gain √(totalRP/50000) Legacy Points on retirement
-- **Full Reset**: All progress resets except Legacy Points and Legacy Upgrades
-- **Bulk Purchasing**: 1x, 10x, 100x, 1000x, and Max quantity options
+**💎 Legendary Items:**
+- **Infinity Edge**: +5x click damage (starts at 2Kg, 1.15x scaling)
+- **Blade of the Ruined King**: +50 gold/sec passive income (starts at 3Kg, 1.15x scaling)
 
-**💎 Legacy Upgrades:**
-- **⚡ Legacy Efficiency**: +10% income per level (cost: 2^level LP)
-- **🧠 Legacy Wisdom**: -2% upgrade costs per level (cost: 2^level LP)  
-- **🔨 Legacy Equipment**: -10% rank requirements per level (cost: 2^level LP)
-  - Reduces RP needed for all rank promotions
-  - Stacks multiplicatively (Level 3 = 72.9% requirements)
-  - Maximum 90% reduction at Level 10+
-  - Faster rank progression = faster rank bonuses
+**🌌 Mythic Items:**
+- **Kraken Slayer**: +10x click damage (starts at 10Kg, 1.15x scaling)
+- **Riftmaker**: +200 gold/sec passive income (starts at 15Kg, 1.15x scaling)
 
-### Achievement System
-**🏆 Achievement Categories:**
-- **Progress Milestones**: RP thresholds, rank achievements
-- **Upgrade Mastery**: Purchase certain amounts of upgrades
-- **Efficiency Goals**: Income/click power milestones
-- **Legacy Achievements**: Prestige-related accomplishments
-- **Special Challenges**: Unique gameplay goals
+### Prestige System - "Season Reset"
+**🏆 Season Reset Mechanic:**
+- **Unlock Requirement**: Earn 1,000 total gold OR reach 100 League Points
+- **Mastery Points**: Gained based on total gold earned and LP achieved
+- **Formula**: (Total Gold ÷ 10,000) + (LP ÷ 100) = Mastery Points earned
+- **Complete Reset**: All progress resets except Mastery Points and upgrades
+- **Season Counter**: Track total seasons completed
 
-**🎯 Achievement Features:**
-- **Real-time Checking**: Achievements unlock automatically when criteria are met
-- **Instant Notifications**: Pop-up notifications with claim buttons
-- **Reward System**: RP bonuses, Legacy Points, or progress boosts
-- **Progress Tracking**: Visual progress counter showing unlocked achievements
-- **Persistent Progress**: Achievements survive prestige and game resets
+**🌟 Mastery Upgrades:**
+- **🏆 Champion Mastery**: +10% global multiplier per level (Max: 50 levels, 2x cost scaling)
+- **💰 Wealthy Start**: +100 starting gold per level (Max: 25 levels, 2x cost scaling)
+- **⭐ Ranked Expertise**: +1 bonus LP per last-hit per level (Max: 20 levels, 2x cost scaling)
+- **📚 Item Knowledge**: -5% item costs per level (Max: 15 levels, 2x cost scaling)
 
-**Progression Design:**
-- Gentler cost scaling for early passive income access
-- Multiple tiers of passive generators for meaningful progression
-- Automation multipliers for exponential growth
-- Reduced emphasis on clicking in favor of strategic upgrading
+### Advanced Progression
+**🎯 Multiplicative Bonuses:**
+- Rank bonuses stack with mastery bonuses for compound growth
+- Global multipliers affect both gold and experience gains
+- Item discounts make progression more efficient across seasons
+- Starting gold bonuses accelerate early game progression
 
-### Mini-Games & Events
-**📋 Case-Solving System:**
-- **Multiple Game Types**: Multiple choice, sequence ordering, evidence analysis
-- **Difficulty Tiers**: Easy, Medium, Hard, Expert cases with varying rewards
-- **Timer Challenges**: Time-limited cases for extra pressure
-- **Equipment Bonuses**: Equipped gear can improve success rates
-- **Rank Progression**: New cases unlock as you advance through ranks
+**💡 Strategic Depth:**
+- Choose between click damage vs passive income items
+- Balance experience items for faster leveling
+- Plan mastery upgrades for optimal long-term progression
+- Decide when to reset for maximum mastery point gains
 
-**🎲 Random Events:**
-- **Dynamic Events**: Crime waves, commendations, equipment finds, training opportunities
-- **Temporary Bonuses**: Click multipliers, passive income boosts, upgrade discounts
-- **Rank-Based**: Higher ranks unlock access to more event types
-- **Visual Notifications**: Real-time event notifications with effects
+### Quality of Life Features
+**🛡️ Enhanced UI:**
+- **Item Shop**: Visual tier badges (Starting, Basic, Epic, Legendary, Mythic)
+- **Progress Tracking**: Clear indicators for next rank/division targets
+- **Mastery Discounts**: Visual indicators when item discounts are active
+- **Smart Tooltips**: Detailed information about effects and scaling
 
-### Equipment System
-**⚔️ Gear Management:**
-- **6 Equipment Slots**: Radio, Badge, Weapon, Vest, Vehicle, Gadget
-- **5 Rarity Tiers**: Common, Uncommon, Rare, Epic, Legendary
-- **Multiple Effects**: Click power, passive income, upgrade costs, case success rates
-- **Collection Progress**: Discover and equip better gear as you progress
-- **Visual Equipment Grid**: Dedicated UI for managing your equipment loadout
-
-### Enhanced Animations & Effects
-**✨ Visual Polish:**
-- **Color-Coded Numbers**: Blue (small), Green (medium), Gold (large values)
-- **Advanced Animations**: FloatUp particle effects with scale transitions
-- **Interactive Feedback**: Button pulse animations for affordable upgrades
-- **Glow Effects**: Main button glows when bonuses are active
-- **Achievement Celebrations**: Gradient notifications with dual animations
-
-### Sound System
-**🔊 Audio Experience:**
-- **Dynamic Sound Effects**: Unique tones for clicks, upgrades, achievements, case results, and rank-ups
-- **Web Audio API**: Professional audio synthesis using oscillators (sine, square, triangle, sawtooth waves)
-- **Ambient Audio**: Optional looping police radio chatter background
-- **Volume Controls**: Master volume slider with separate SFX and ambient controls
-- **Smart Settings**: Per-category enable/disable toggles with test sound functionality
-- **Cross-Browser Support**: Compatible with AudioContext and webkitAudioContext
-- **Persistent Preferences**: Sound settings saved with game progress
-- **Performance Optimized**: Minimal memory usage with efficient real-time audio generation
-
-### Theme System
-**🎨 Visual Customization:**
-- **3 Theme Modes**: Dark, Light, and Auto (follows system preference detection)
-- **Real-time Theme Switching**: Instant visual transitions with smooth 300ms animations
-- **Custom Color Palette**: User-configurable primary, secondary, and accent colors
-- **Color Picker Interface**: Intuitive hex color selection with live preview
-- **CSS Custom Properties**: Dynamic theme variables for consistent styling across all components
-- **Professional Color Schemes**: High-contrast dark and light themes optimized for readability
-- **Themed Scrollbars**: Custom scrollbar styling that adapts to the selected theme
-- **System Integration**: Auto mode automatically detects and follows OS dark/light preference
-- **Reset Functionality**: One-click restoration to default police-themed color scheme
-- **Persistent Settings**: Theme preferences and custom colors saved with game progress
-
-### Statistics & Analytics
-**📊 Performance Insights:**
-- **Comprehensive Tracking**: Real-time monitoring of clicks, RP earned/spent, upgrades purchased, cases solved
-- **Performance Metrics**: Click efficiency analysis, passive vs active income ratios, net worth calculations
-- **Progression Analytics**: Rank advancement tracking, achievement completion rates, prestige statistics
-- **Session Management**: Play time tracking, session counting, first/last play dates
-- **Efficiency Analysis**: Income breakdown with optimization insights and strategic recommendations
-- **Visual Progress Bars**: Achievement completion rates with color-coded progress indicators
-- **Smart Insights**: AI-powered suggestions for optimizing gameplay based on current statistics
-- **Historical Data**: Persistent tracking across sessions and prestige cycles
-- **Comparative Analysis**: Passive vs click income ratios and efficiency benchmarking
-- **Dashboard Interface**: Professional analytics layout with categorized performance sections
-
-### Save Management System
-**💾 Import/Export Functionality:**
-- **Save Export**: One-click download of complete game state as encoded text file
-- **Cross-Platform Compatibility**: Save files work across different devices and browsers
-- **Complete Data Preservation**: All progress, settings, equipment, achievements, and statistics included
-- **Version Control**: Save files include version metadata for future compatibility
-- **Security Features**: Base64 encoding with data validation and error handling
-- **Import Validation**: Comprehensive error checking prevents corrupted save data
-- **Backup Recommendations**: Built-in warnings encourage users to backup before importing
-- **File Naming**: Automatic date-stamped filenames for easy organization
-- **User-Friendly Interface**: Clear modals with helpful instructions and warnings
-
-### Mobile Responsive Design
-**📱 Cross-Device Compatibility:**
-- **Adaptive Layout**: Responsive grid system that works from 320px to 4K displays
-- **Touch-Optimized**: 44px minimum touch targets for mobile accessibility compliance
-- **Smart Typography**: Responsive text scaling (sm:text-lg, lg:text-xl) for optimal readability
-- **Mobile-First Modals**: Optimized modal sizing and positioning for mobile devices
-- **Improved Spacing**: Dynamic padding and margins that adapt to screen size
-- **Notification System**: Mobile-aware positioning for achievement and event notifications
-- **Button Scaling**: Click button scales from 128px (mobile) to 192px (desktop)
-- **Input Enhancement**: 16px font size on inputs to prevent zoom on iOS Safari
-- **Gesture Support**: Touch-friendly interactions with proper active states
-- **Horizontal Scroll Prevention**: CSS safeguards against unwanted horizontal scrolling
-
-### Department Building System
-**🏛️ Advanced Management Framework:**
-- **6 Building Types**: Police Station, Training Facility, Forensics Lab, Dispatch Center, Armory, Motor Pool
-- **Rank-Gated Progression**: Buildings unlock as you advance through police ranks
-- **Level-Based Scaling**: Each building has 4-10 upgrade levels with exponential cost scaling
-- **Multi-Effect Benefits**: Buildings provide passive income, click bonuses, staff capacity, and special effects
-- **Staff Management**: 5 staff types (Officer, Detective, Technician, Dispatcher, Sergeant) with unique skills
-- **Assignment System**: Strategic staff placement in buildings for optimal efficiency
-- **Skill Synergy**: Staff skills (Investigation, Patrol, Technical, Leadership) affect building performance
-- **Upgrade Economics**: Exponential cost scaling (2.0x-2.8x) balanced for long-term progression
-- **Visual Integration**: Custom icons and police-themed building designs
-- **Save Compatibility**: Full integration with existing save/load and import/export systems
-
-### Statistics & UI
-- **Comprehensive Stats**: Track total RP, rank, click power, passive income, and upgrades
-- **Adaptive Design**: Works on desktop and mobile devices with responsive layouts
-- **Dynamic Theming**: User-customizable dark/light themes with police-inspired color schemes
-- **Real-time Updates**: All displays update dynamically with game state changes
-- **Accessibility**: High contrast ratios and theme-aware styling for optimal readability
-- **Settings Panel**: Centralized control for sound, theme, and game preferences
+**💾 Save System:**
+- **Auto-Save**: Progress saved every 5 seconds with full state preservation
+- **Cross-Session**: All mastery progression persists across browser sessions
+- **Error Handling**: Robust save/load with validation and error recovery
 
 ## 🚀 Getting Started
 
@@ -192,7 +91,7 @@ A browser-based clicker game where players progress through a police officer's c
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd cop-clicker
+cd lol-clicker
 
 # Install dependencies
 npm install
@@ -211,6 +110,9 @@ npm run build
 # Start production server
 npm start
 
+# Run linting
+npm run lint
+
 # Type check
 npx tsc --noEmit
 ```
@@ -219,78 +121,82 @@ npx tsc --noEmit
 
 - **Next.js 15** - React framework with App Router
 - **React 19** - UI library with modern hooks
-- **TypeScript** - Type safety and better DX
+- **TypeScript** - Type safety and better developer experience
 - **Tailwind CSS v4** - Utility-first CSS framework
 - **Turbopack** - Fast development builds
 - **break_eternity.js** - Big number support for astronomical values
-- **Web Audio API** - Professional sound effects and ambient audio synthesis
-- **CSS Custom Properties** - Dynamic theming system with real-time color customization
 
 ## 📋 Development Roadmap
 
 ### ✅ Phase 1: Core Foundation (Complete)
-- [x] Basic clicking mechanics
-- [x] Respect Points currency system  
-- [x] Upgrade shop with 3 upgrade types
-- [x] Rank progression system (6 ranks)
+- [x] Basic last-hitting mechanics with LoL theming
+- [x] Gold and Experience currency systems
+- [x] Item shop with 11 League of Legends themed items
+- [x] Rank progression system (Iron → Challenger)
 - [x] Auto-save/load functionality
 - [x] Visual feedback and animations
 - [x] Responsive UI design
 
-### ✅ Phase 2: Core Progression (Complete)
-- [x] Prestige system ("Retirement" mechanic)
-- [x] Legacy Points currency
-- [x] Permanent progression bonuses
-- [x] Achievement system with real-time unlocking
-- [x] Case-solving mini-games (multiple choice, sequence, evidence)
-- [x] Random events system with temporary bonuses
+### ✅ Phase 2.1: Upgrades System (Complete)
+- [x] Item shop interface with LoL-themed items
+- [x] 5 item tiers with visual distinction
+- [x] Click multipliers and passive gold generation
+- [x] Experience bonuses for faster leveling
+- [x] Exponential cost scaling (1.15x per level)
 
-### ✅ Phase 3: Advanced Features (Complete)
-- [x] Equipment system with 6 slot types and rarity tiers
-- [x] Enhanced animations and particle effects
-- [x] Visual click feedback with color-coded numbers
-- [x] Button hover animations and glow effects
-- [x] Achievement notification animations
-- [x] Auto-save with localStorage persistence
+### ✅ Phase 2.2: Enhanced Rank Progression (Complete)
+- [x] Proper LP system with 100 LP per division
+- [x] Rank-specific bonuses from Iron (1.0x) to Challenger (4.0x)
+- [x] Visual LP progress tracking with next promotion targets
+- [x] Rank bonus integration with all game systems
 
-### ✅ Phase 4.1: UI/UX Polish (Complete)
-- [x] Advanced click animations with particle effects
-- [x] Enhanced visual feedback and color coding
-- [x] Responsive button interactions
-- [x] Sound effects and ambient audio system
-- [x] Dark/light theme toggle with customization
+### ✅ Phase 3.1: Prestige System (Complete)
+- [x] "Season Reset" prestige mechanic
+- [x] Mastery Points currency system
+- [x] 4 permanent mastery upgrade types
+- [x] Exponential mastery upgrade scaling
+- [x] Smart reset requirements (1K gold OR 100 LP)
+- [x] Season tracking and progression persistence
 
-### ✅ Phase 4.2: Advanced Systems (Complete)
-- [x] Statistics and analytics dashboard
-- [x] Export/import save functionality
-- [x] Mobile responsive design improvements
-- [x] Department building and staff management system (foundational structure)
+### 🚧 Phase 3.2: Mini-Games & Events (Planned)
+- [ ] Team fight simulation mini-games
+- [ ] Random events (Double XP weekends, tournaments)
+- [ ] Limited-time events (World Championship, MSI)
+- [ ] Achievement system with LoL-themed accomplishments
 
-### 🌟 Phase 5: Extended Content (Future)
-- [ ] Specialized units (SWAT, K-9, Detective)
-- [ ] Storyline and narrative
+### 🌟 Phase 4: Polish & Enhancement (Future)
+- [ ] Enhanced animations and particle effects
+- [ ] Sound effects and ambient audio
+- [ ] Theme system (Classic Rift, Dark/Light modes)
+- [ ] Advanced statistics dashboard
+- [ ] Export/import save functionality
+
+### 🎯 Phase 5: Extended Content (Future)
+- [ ] Champion collection system
+- [ ] Role specialization (ADC, Support, Jungle, Mid, Top)
+- [ ] Storyline and lore elements
 - [ ] Social features and leaderboards
-- [ ] Community challenges
 
 ## 🎯 Game Balance
 
-**Idle-Friendly Design:**
-- **Early Passive Access**: First passive income at just 15 RP (15 clicks)
-- **Tiered Progression**: Multiple passive generators unlock meaningful growth stages
-- **Reduced Click Dependence**: Passive income quickly overtakes clicking
-- **Automation Rewards**: AI systems provide exponential scaling for dedicated players
-
-**Progression Curve:**
-- **Early Game** (0-100 RP): Learn clicking, unlock first Partner, solve basic cases
-- **Mid Game** (100-1K RP): Build passive income portfolio, achieve Detective rank, unlock equipment
-- **Late Game** (1K+ RP): Focus on high-tier generators, complete complex cases, optimize equipment
-- **End Game** (5K+ RP): Automation multipliers, prestige cycling, achievement hunting
-- **Master Game** (50K+ RP): Multiple prestige runs, legacy upgrade optimization, rare equipment collection
+**Progression Design:**
+- **Early Game** (0-100g): Learn last-hitting, purchase starting items
+- **Mid Game** (100-1Kg): Build item collection, climb through Bronze/Silver
+- **Late Game** (1K-10Kg): Focus on high-tier items, reach Gold/Platinum
+- **End Game** (10K+ gold): Mythic items, Diamond+ ranks, prestige preparation
+- **Mastery Game** (Post-Prestige): Multi-season optimization, mastery upgrades
 
 **Cost Scaling:**
-- **Gentle Early Scaling**: 1.3x-1.6x for early upgrades
-- **Strategic Late Scaling**: 2.0x-2.5x for high-tier content
-- **Rank Bonuses**: +25% per rank affects all income sources
+- **Consistent Scaling**: 1.15x cost increase per item level
+- **Rank Bonuses**: Multiplicative bonuses encourage rank progression
+- **Mastery Benefits**: Permanent upgrades provide long-term goals
+- **Strategic Depth**: Multiple viable upgrade paths and timing decisions
+
+**Idle-Friendly Design:**
+- Passive gold generation available from early game
+- Multiple tiers of passive income sources
+- Experience bonuses reduce active clicking requirement
+- Mastery system rewards long-term planning over rapid clicking
 
 ## 🤝 Contributing
 
@@ -300,3 +206,22 @@ This project follows the roadmap outlined in `ROADMAP.md`. See `CLAUDE.md` for t
 
 This project is open source and available under the [MIT License](LICENSE).
 
+## 🎮 Gameplay Tips
+
+**For New Players:**
+1. Start with Doran's Blade for immediate click damage boost
+2. Add Doran's Ring for passive income once you can afford it
+3. Focus on reaching level 5 to start earning League Points
+4. Balance click items vs passive income based on playstyle
+
+**For Advanced Players:**
+1. Plan mastery upgrades based on intended playstyle
+2. Consider resetting early for quick mastery points
+3. Item Knowledge mastery becomes very powerful with many upgrades
+4. Champion Mastery provides the highest long-term scaling
+
+**Optimization Strategies:**
+- Reset when mastery point gains exceed current progress rate
+- Prioritize Champion Mastery for multiplicative scaling
+- Use Item Knowledge to reduce costs across all items
+- Balance Wealthy Start and Ranked Expertise based on preferred strategy
