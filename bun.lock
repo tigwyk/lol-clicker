@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "cop-clicker",
+      "name": "lol-clicker",
       "dependencies": {
         "break_eternity.js": "^2.1.2",
         "next": "15.4.4",

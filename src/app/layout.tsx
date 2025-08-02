@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cop Clicker - Rise Through the Ranks",
-  description: "An incremental game about cop life. Click to earn respect and climb the police hierarchy.",
+  title: "LoL Clicker - Rise Through the Ranks",
+  description: "An incremental game about League of Legends. Click to earn respect and climb the ranks.",
 };
 
 export default function RootLayout({
