@@ -15,6 +15,20 @@ export interface Item {
   color: string;
 }
 
+// Mastery upgrade interface
+export interface MasteryUpgrade {
+  id: string;
+  name: string;
+  description: string;
+  baseCost: Decimal;
+  effect: {
+    type: 'global_multiplier' | 'starting_gold' | 'lp_bonus' | 'item_discount';
+    value: Decimal;
+  };
+  maxLevel: number;
+  icon: string;
+}
+
 // Game state interface
 export interface GameState {
   gold: Decimal;
@@ -28,6 +42,13 @@ export interface GameState {
   leaguePoints: number;
   upgrades: {
     [itemId: string]: Decimal;
+  };
+  // Prestige system
+  masteryPoints: Decimal;
+  totalMasteryPoints: Decimal;
+  seasonCount: number;
+  masteryUpgrades: {
+    [upgradeId: string]: Decimal;
   };
 }
 

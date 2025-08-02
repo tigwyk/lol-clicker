@@ -1,5 +1,5 @@
 import { GameState, RankInfo } from "@/types/game";
-import { formatNumber } from "@/utils/gameCalculations";
+import { formatNumber, getRankBonus, getLPNeededForNext } from "@/utils/gameCalculations";
 
 interface StatsPanelProps {
   gameState: GameState;
@@ -7,6 +7,9 @@ interface StatsPanelProps {
 }
 
 export default function StatsPanel({ gameState, currentRankInfo }: StatsPanelProps) {
+  const rankBonus = getRankBonus(gameState.rank);
+  const lpProgress = getLPNeededForNext(gameState.leaguePoints);
+
   return (
     <div className="lg:col-span-1">
       <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-gray-700">
@@ -26,6 +29,30 @@ export default function StatsPanel({ gameState, currentRankInfo }: StatsPanelPro
           <div className="text-sm text-gray-400">
             {gameState.leaguePoints} LP
           </div>
+          
+          {/* Rank Bonus */}
+          <div className="text-xs text-blue-400 mt-1">
+            +{Math.round((rankBonus - 1) * 100)}% rank bonus
+          </div>
+          
+          {/* Next Rank Progress */}
+          {lpProgress.needed > 0 && (
+            <div className="mt-2">
+              <div className="text-xs text-gray-400 mb-1">
+                {lpProgress.needed} LP to {lpProgress.nextTarget}
+              </div>
+              <div className="w-full bg-gray-700 rounded-full h-1">
+                <div 
+                  className={`h-1 rounded-full transition-all duration-300 ${
+                    lpProgress.isRankUp ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 'bg-gradient-to-r from-blue-400 to-purple-500'
+                  }`}
+                  style={{ 
+                    width: `${Math.max(10, 100 - (lpProgress.needed / 100) * 100)}%` 
+                  }}
+                ></div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Level */}

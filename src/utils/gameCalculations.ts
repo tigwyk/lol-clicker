@@ -1,6 +1,6 @@
 import Decimal from "break_eternity.js";
-import { Item, RankInfo } from "@/types/game";
-import { RANKS, ITEMS } from "@/constants/game";
+import { Item, RankInfo, MasteryUpgrade } from "@/types/game";
+import { RANKS, ITEMS, LP_PER_DIVISION, RANK_BONUSES, MASTERY_UPGRADES } from "@/constants/game";
 
 // Utility function to format large numbers
 export function formatNumber(num: Decimal): string {
@@ -25,13 +25,44 @@ export function calculateRank(lp: number): RankInfo {
         return { rank: rank.name, division: 1, color: rank.color };
       } else {
         const lpInRank = lp - rank.lpRequired;
-        const lpPerDivision = (RANKS[i + 1]?.lpRequired || rank.lpRequired + 400) / rank.divisions;
-        const division = Math.min(rank.divisions, Math.floor(lpInRank / lpPerDivision) + 1);
+        const division = Math.min(rank.divisions, Math.floor(lpInRank / LP_PER_DIVISION) + 1);
         return { rank: rank.name, division, color: rank.color };
       }
     }
   }
   return { rank: "Iron", division: 1, color: "#8B5A3C" };
+}
+
+// Get rank bonus multiplier
+export function getRankBonus(rank: string): number {
+  return RANK_BONUSES[rank] || 1.0;
+}
+
+// Calculate LP needed for next division/rank
+export function getLPNeededForNext(currentLP: number): { needed: number; isRankUp: boolean; nextTarget: string } {
+  const currentRank = calculateRank(currentLP);
+  const currentRankIndex = RANKS.findIndex(r => r.name === currentRank.rank);
+  
+  if (currentRankIndex === -1) return { needed: 0, isRankUp: false, nextTarget: "Max Rank" };
+  
+  const rank = RANKS[currentRankIndex];
+  
+  // If we're at max rank
+  if (currentRankIndex === RANKS.length - 1) {
+    return { needed: 0, isRankUp: false, nextTarget: "Challenger" };
+  }
+  
+  // If we're in the highest division of current rank, next is rank up
+  if (currentRank.division === rank.divisions) {
+    const nextRank = RANKS[currentRankIndex + 1];
+    const needed = nextRank.lpRequired - currentLP;
+    return { needed, isRankUp: true, nextTarget: `${nextRank.name} 1` };
+  }
+  
+  // Otherwise, next division
+  const nextDivisionLP = (currentRank.division) * LP_PER_DIVISION;
+  const needed = rank.lpRequired + nextDivisionLP - currentLP;
+  return { needed, isRankUp: false, nextTarget: `${rank.name} ${currentRank.division + 1}` };
 }
 
 // Calculate upgrade cost with exponential scaling
@@ -85,4 +116,49 @@ export function calculateExperienceMultiplier(upgrades: { [itemId: string]: Deci
   });
   
   return totalMultiplier;
+}
+
+// Calculate mastery upgrade cost
+export function calculateMasteryUpgradeCost(upgrade: MasteryUpgrade, currentLevel: Decimal): Decimal {
+  return upgrade.baseCost.mul(new Decimal(2).pow(currentLevel));
+}
+
+// Calculate global multiplier from mastery upgrades
+export function calculateMasteryBonus(masteryUpgrades: { [upgradeId: string]: Decimal }): {
+  globalMultiplier: Decimal;
+  startingGold: Decimal;
+  lpBonus: Decimal;
+  itemDiscount: Decimal;
+} {
+  let globalMultiplier = new Decimal(1);
+  let startingGold = new Decimal(0);
+  let lpBonus = new Decimal(0);
+  let itemDiscount = new Decimal(1);
+
+  MASTERY_UPGRADES.forEach(upgrade => {
+    const level = masteryUpgrades[upgrade.id] || new Decimal(0);
+    if (level.gt(0)) {
+      switch (upgrade.effect.type) {
+        case 'global_multiplier':
+          globalMultiplier = globalMultiplier.mul(upgrade.effect.value.pow(level));
+          break;
+        case 'starting_gold':
+          startingGold = startingGold.add(upgrade.effect.value.mul(level));
+          break;
+        case 'lp_bonus':
+          lpBonus = lpBonus.add(upgrade.effect.value.mul(level));
+          break;
+        case 'item_discount':
+          itemDiscount = itemDiscount.mul(upgrade.effect.value.pow(level));
+          break;
+      }
+    }
+  });
+
+  return { globalMultiplier, startingGold, lpBonus, itemDiscount };
+}
+
+// Check if prestige is available (minimum requirements)
+export function canPrestige(gameState: { totalGoldEarned: Decimal; leaguePoints: number }): boolean {
+  return gameState.totalGoldEarned.gte(1000) || gameState.leaguePoints >= 100;
 }

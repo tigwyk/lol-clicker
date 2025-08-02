@@ -1,7 +1,7 @@
 import Decimal from "break_eternity.js";
 import { GameState, Item } from "@/types/game";
 import { ITEMS } from "@/constants/game";
-import { formatNumber, calculateUpgradeCost } from "@/utils/gameCalculations";
+import { formatNumber, calculateUpgradeCost, calculateMasteryBonus } from "@/utils/gameCalculations";
 
 interface ItemShopProps {
   gameState: GameState;
@@ -9,16 +9,28 @@ interface ItemShopProps {
 }
 
 export default function ItemShop({ gameState, onPurchaseItem }: ItemShopProps) {
+  const masteryBonus = calculateMasteryBonus(gameState.masteryUpgrades);
+
   return (
     <div className="mt-8">
       <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-gray-700">
         <h2 className="text-2xl font-bold mb-6 text-center">Item Shop</h2>
         
+        {/* Show mastery discount if applicable */}
+        {masteryBonus.itemDiscount.lt(1) && (
+          <div className="text-center mb-4">
+            <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">
+              {Math.round((1 - masteryBonus.itemDiscount.toNumber()) * 100)}% Mastery Discount Active
+            </span>
+          </div>
+        )}
+        
         {/* Shop Categories */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {ITEMS.map(item => {
             const currentLevel = gameState.upgrades[item.id] || new Decimal(0);
-            const cost = calculateUpgradeCost(item, currentLevel);
+            const baseCost = calculateUpgradeCost(item, currentLevel);
+            const cost = baseCost.mul(masteryBonus.itemDiscount);
             const canAfford = gameState.gold.gte(cost);
             
             return (

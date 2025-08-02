@@ -2,18 +2,23 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Decimal from "break_eternity.js";
-import { GameState, Item } from "@/types/game";
+import { GameState, Item, MasteryUpgrade } from "@/types/game";
+import { calculateMasteryPointsGained } from "@/constants/game";
 import { 
   calculateLevel, 
   calculateRank, 
   calculateClickValue, 
   calculatePassiveGold, 
   calculateExperienceMultiplier,
-  calculateUpgradeCost 
+  calculateUpgradeCost,
+  getRankBonus,
+  calculateMasteryBonus,
+  calculateMasteryUpgradeCost
 } from "@/utils/gameCalculations";
 import StatsPanel from "@/components/StatsPanel";
 import ClickArea from "@/components/ClickArea";
 import ItemShop from "@/components/ItemShop";
+import PrestigePanel from "@/components/PrestigePanel";
 
 export default function Home() {
   const [gameState, setGameState] = useState<GameState>({
@@ -27,6 +32,11 @@ export default function Home() {
     division: 1,
     leaguePoints: 0,
     upgrades: {},
+    // Prestige system
+    masteryPoints: new Decimal(0),
+    totalMasteryPoints: new Decimal(0),
+    seasonCount: 1,
+    masteryUpgrades: {},
   });
 
   const [lastHitEffect, setLastHitEffect] = useState(false);
@@ -38,11 +48,19 @@ export default function Home() {
       try {
         const parsed = JSON.parse(savedData);
         const upgrades: { [itemId: string]: Decimal } = {};
+        const masteryUpgrades: { [upgradeId: string]: Decimal } = {};
         
         // Convert saved upgrade data back to Decimal
         if (parsed.upgrades) {
           Object.keys(parsed.upgrades).forEach(key => {
             upgrades[key] = new Decimal(parsed.upgrades[key] || 0);
+          });
+        }
+        
+        // Convert saved mastery upgrade data back to Decimal
+        if (parsed.masteryUpgrades) {
+          Object.keys(parsed.masteryUpgrades).forEach(key => {
+            masteryUpgrades[key] = new Decimal(parsed.masteryUpgrades[key] || 0);
           });
         }
         
@@ -58,6 +76,10 @@ export default function Home() {
           division: parsed.division || 1,
           leaguePoints: parsed.leaguePoints || 0,
           upgrades,
+          masteryPoints: new Decimal(parsed.masteryPoints || 0),
+          totalMasteryPoints: new Decimal(parsed.totalMasteryPoints || 0),
+          seasonCount: parsed.seasonCount || 1,
+          masteryUpgrades,
         }));
       } catch (error) {
         console.error('Failed to load save data:', error);
@@ -73,6 +95,11 @@ export default function Home() {
         upgrades[key] = gameState.upgrades[key].toString();
       });
       
+      const masteryUpgrades: { [upgradeId: string]: string } = {};
+      Object.keys(gameState.masteryUpgrades).forEach(key => {
+        masteryUpgrades[key] = gameState.masteryUpgrades[key].toString();
+      });
+      
       const saveData = {
         gold: gameState.gold.toString(),
         experience: gameState.experience.toString(),
@@ -84,6 +111,10 @@ export default function Home() {
         division: gameState.division,
         leaguePoints: gameState.leaguePoints,
         upgrades,
+        masteryPoints: gameState.masteryPoints.toString(),
+        totalMasteryPoints: gameState.totalMasteryPoints.toString(),
+        seasonCount: gameState.seasonCount,
+        masteryUpgrades,
       };
       localStorage.setItem('lol-clicker-save', JSON.stringify(saveData));
     }, 5000); // Save every 5 seconds
@@ -129,7 +160,8 @@ export default function Home() {
   // Handle item purchase
   const purchaseItem = useCallback((item: Item) => {
     const currentLevel = gameState.upgrades[item.id] || new Decimal(0);
-    const cost = calculateUpgradeCost(item, currentLevel);
+    const masteryBonus = calculateMasteryBonus(gameState.masteryUpgrades);
+    const cost = calculateUpgradeCost(item, currentLevel).mul(masteryBonus.itemDiscount);
     
     if (gameState.gold.gte(cost)) {
       setGameState(prev => {
@@ -145,14 +177,63 @@ export default function Home() {
         };
       });
     }
-  }, [gameState.gold, gameState.upgrades]);
+  }, [gameState.gold, gameState.upgrades, gameState.masteryUpgrades]);
+
+  // Handle season reset (prestige)
+  const handlePrestige = useCallback(() => {
+    const masteryPointsGained = calculateMasteryPointsGained(gameState.totalGoldEarned, gameState.leaguePoints);
+    const masteryBonus = calculateMasteryBonus(gameState.masteryUpgrades);
+    
+    setGameState(prev => ({
+      // Reset core progression
+      gold: masteryBonus.startingGold,
+      experience: new Decimal(0),
+      level: 1,
+      clickValue: calculateClickValue({}),
+      goldPerSecond: calculatePassiveGold({}),
+      totalGoldEarned: new Decimal(0),
+      rank: "Iron",
+      division: 1,
+      leaguePoints: 0,
+      upgrades: {},
+      
+      // Keep mastery progression
+      masteryPoints: prev.masteryPoints.add(masteryPointsGained),
+      totalMasteryPoints: prev.totalMasteryPoints.add(masteryPointsGained),
+      seasonCount: prev.seasonCount + 1,
+      masteryUpgrades: prev.masteryUpgrades,
+    }));
+  }, [gameState.totalGoldEarned, gameState.leaguePoints, gameState.masteryUpgrades]);
+
+  // Handle mastery upgrade purchase
+  const purchaseMasteryUpgrade = useCallback((upgrade: MasteryUpgrade) => {
+    const currentLevel = gameState.masteryUpgrades[upgrade.id] || new Decimal(0);
+    const cost = calculateMasteryUpgradeCost(upgrade, currentLevel);
+    
+    if (gameState.masteryPoints.gte(cost) && currentLevel.lt(upgrade.maxLevel)) {
+      setGameState(prev => {
+        const newMasteryUpgrades = { ...prev.masteryUpgrades };
+        newMasteryUpgrades[upgrade.id] = currentLevel.add(1);
+        
+        return {
+          ...prev,
+          masteryPoints: prev.masteryPoints.sub(cost),
+          masteryUpgrades: newMasteryUpgrades,
+        };
+      });
+    }
+  }, [gameState.masteryPoints, gameState.masteryUpgrades]);
 
   // Handle minion last-hit click
   const handleLastHit = useCallback(() => {
-    const goldGained = gameState.clickValue;
+    const rankBonus = getRankBonus(gameState.rank);
+    const masteryBonus = calculateMasteryBonus(gameState.masteryUpgrades);
+    const totalMultiplier = masteryBonus.globalMultiplier.mul(rankBonus);
+    
+    const goldGained = gameState.clickValue.mul(totalMultiplier);
     const expMultiplier = calculateExperienceMultiplier(gameState.upgrades);
-    const expGained = new Decimal(1).mul(expMultiplier);
-    const lpGained = gameState.level >= 5 ? 1 : 0;
+    const expGained = new Decimal(1).mul(expMultiplier).mul(totalMultiplier);
+    const lpGained = gameState.level >= 5 ? Math.max(1, Math.floor(rankBonus) + masteryBonus.lpBonus.toNumber()) : 0;
 
     setGameState(prev => ({
       ...prev,
@@ -165,7 +246,7 @@ export default function Home() {
     // Visual feedback
     setLastHitEffect(true);
     setTimeout(() => setLastHitEffect(false), 200);
-  }, [gameState.clickValue, gameState.level, gameState.upgrades]);
+  }, [gameState.clickValue, gameState.level, gameState.upgrades, gameState.masteryUpgrades, gameState.rank]);
 
   const currentRankInfo = calculateRank(gameState.leaguePoints);
 
@@ -191,6 +272,12 @@ export default function Home() {
         </div>
 
         <ItemShop gameState={gameState} onPurchaseItem={purchaseItem} />
+
+        <PrestigePanel 
+          gameState={gameState} 
+          onPrestige={handlePrestige}
+          onPurchaseMasteryUpgrade={purchaseMasteryUpgrade}
+        />
 
         {/* Footer */}
         <div className="text-center mt-8 text-gray-500 text-sm">

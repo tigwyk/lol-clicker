@@ -1,5 +1,5 @@
 import Decimal from "break_eternity.js";
-import { Rank, Item } from "@/types/game";
+import { Rank, Item, MasteryUpgrade } from "@/types/game";
 
 // LoL rank system
 export const RANKS: Rank[] = [
@@ -13,6 +13,22 @@ export const RANKS: Rank[] = [
   { name: "Grandmaster", divisions: 1, color: "#FF4500", lpRequired: 2700 },
   { name: "Challenger", divisions: 1, color: "#FFD700", lpRequired: 3000 },
 ];
+
+// LP requirements per division (100 LP per division)
+export const LP_PER_DIVISION = 100;
+
+// Rank bonus multipliers (applied to all gold/XP gains)
+export const RANK_BONUSES: { [rankName: string]: number } = {
+  "Iron": 1.0,
+  "Bronze": 1.1,
+  "Silver": 1.25,
+  "Gold": 1.5,
+  "Platinum": 1.75,
+  "Diamond": 2.0,
+  "Master": 2.5,
+  "Grandmaster": 3.0,
+  "Challenger": 4.0,
+};
 
 // LoL Items for upgrades
 export const ITEMS: Item[] = [
@@ -136,3 +152,51 @@ export const ITEMS: Item[] = [
     color: '#4B0082'
   }
 ];
+
+// Mastery upgrades for prestige system
+export const MASTERY_UPGRADES: MasteryUpgrade[] = [
+  {
+    id: 'champion_mastery',
+    name: 'Champion Mastery',
+    description: 'Increases all gold and XP gains globally',
+    baseCost: new Decimal(1),
+    effect: { type: 'global_multiplier', value: new Decimal(1.1) },
+    maxLevel: 50,
+    icon: '🏆'
+  },
+  {
+    id: 'wealthy_start',
+    name: 'Wealthy Start',
+    description: 'Begin each season with bonus starting gold',
+    baseCost: new Decimal(2),
+    effect: { type: 'starting_gold', value: new Decimal(100) },
+    maxLevel: 25,
+    icon: '💰'
+  },
+  {
+    id: 'ranked_expertise',
+    name: 'Ranked Expertise',
+    description: 'Gain bonus LP from each last-hit',
+    baseCost: new Decimal(3),
+    effect: { type: 'lp_bonus', value: new Decimal(1) },
+    maxLevel: 20,
+    icon: '⭐'
+  },
+  {
+    id: 'item_knowledge',
+    name: 'Item Knowledge',
+    description: 'Reduces the cost of all item upgrades',
+    baseCost: new Decimal(5),
+    effect: { type: 'item_discount', value: new Decimal(0.95) },
+    maxLevel: 15,
+    icon: '📚'
+  }
+];
+
+// Calculate mastery points gained from prestige
+export function calculateMasteryPointsGained(totalGoldEarned: Decimal, leaguePoints: number): Decimal {
+  // Base formula: (total gold earned / 10000) + (LP / 100)
+  const goldBonus = totalGoldEarned.div(10000);
+  const lpBonus = new Decimal(leaguePoints).div(100);
+  return goldBonus.add(lpBonus).floor();
+}
